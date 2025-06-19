@@ -140,11 +140,4 @@ kubectl get pods -A -o wide
 
 ---
 
-###  Kết quả kiểm tra
-
-| Thành phần | Trạng thái | Mô tả |
-|------------|------------|--------|
-|  **System Pods** | Running | Tất cả pods hệ thống hoạt động bình thường |
-|  **Cluster Nodes** |  Ready | Các nodes đã sẵn sàng nhận workload |
-|  **Pod Distribution** |  Healthy | Pods được phân phối đều trên các nodes |
 
