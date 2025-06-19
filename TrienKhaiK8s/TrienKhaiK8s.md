@@ -50,7 +50,7 @@
 **Tài liệu hướng dẫn cài đặt kubespray**: https://github.com/kubernetes-sigs/kubespray/tree/master
 ###  Cấu hình mạng và SSH
 
-Để thuận tiện cho quá trình thực hiện bài tập cuối khóa, sinh viên cần thực hiện các cấu hình sau:
+Để thuận tiện cho quá trình thực hiện bài tập cuối khóa, sinh viên đã thực hiện các cấu hình sau:
 
 ###  Địa chỉ IP tĩnh cho hai máy ảo:
 
