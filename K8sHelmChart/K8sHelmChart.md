@@ -201,7 +201,7 @@ Dự án được tổ chức thành 4 repository chính, phân chia rõ ràng g
 #### 1. Repo config cho backend
 **[Repo config backend](https://github.com/Maybetuandat/vdt_2025_backend_config)**
 
-#### `values-prod.yaml` của backend service:
+#### `values-prod.yaml` của backend config:
 ```yaml
 replicaCount: 3
 image:
