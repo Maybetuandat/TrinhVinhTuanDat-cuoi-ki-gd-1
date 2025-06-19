@@ -73,7 +73,6 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 File Manifest triển khai dịch vụ ArgoCD qua NodePort (nodePort: 30000):
 
 ```yaml
-# argocd-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -140,3 +139,308 @@ Trong đó:
 - **Manifest của ArgoCD Application**
 - **Ảnh chụp giao diện** màn hình hệ thống ArgoCD trên trình duyệt
 - **Ảnh chụp giao diện** màn hình trình duyệt khi truy cập vào Web URL, API URL
+### Kiến trúc Repository
+
+#### Tổng quan
+
+Dự án được tổ chức thành 4 repository chính, phân chia rõ ràng giữa source code và configuration:
+
+---
+
+####  Repository Structure
+
+##### Backend
+| Repository | Mô tả | Link |
+|------------|-------|------|
+| **vdt_2025_backend** | Source code backend | [🔗 GitHub](https://github.com/Maybetuandat/vdt_2025_backend) |
+| **vdt_2025_backend_config** | Configuration backend | [🔗 GitHub](https://github.com/Maybetuandat/vdt_2025_backend_config) |
+
+##### Frontend  
+| Repository | Mô tả | Link |
+|------------|-------|------|
+| **vdt_2025_frontend** | Source code frontend | [🔗 GitHub](https://github.com/Maybetuandat/vdt_2025_frontend) |
+| **vdt_2025_frontend_config** | Configuration frontend | [🔗 GitHub](https://github.com/Maybetuandat/vdt_2025_frontend_config) |
+
+##### Database
+| Repository | Mô tả | Link |
+|------------|-------|------|
+| **vdt_2025_database** | Repo chứa các file helm chart và value deployment  | [🔗 GitHub](https://github.com/Maybetuandat/vdt_db) |
+---
+### Các Helm Chart sử dụng để triển khai app lên K8S Cluster
+
+#### Danh sách Helm Charts
+
+#### 1. Helm Chart triển khai backend deployment
+**[Source code Helm Chart Backend](https://github.com/Maybetuandat/vdt_2025_backend/tree/main/backend-chart)**: Source code nằm trong thư mục `backend-chart`
+
+#### 2. Helm Chart triển khai frontend deployment  
+**[Source code Helm Chart Frontend](https://github.com/Maybetuandat/vdt_2025_frontend/tree/main/helm-chart)**: Source code nằm trong thư mục `helm-chart`
+
+---
+#### 3. Helm Chart triển khai database deployment  
+**[Source code Helm Chart Database](https://github.com/Maybetuandat/vdt_db)**: Source code nằm trong thư mục `database-chart`
+
+---
+### Tạo Repo Config cho backend và frontend
+
+#### Cách thức hoạt động
+> **Repo config** sẽ chứa các file `values.yaml` với nội dung của các file `values.yaml` là các config cần thiết để chạy ứng dụng trên K8s bằng Helm Chart
+
+### Thông số triển khai
+
+| Service | Replicas | NodePort | Mô tả |
+|---------|----------|----------|-------|
+| **Backend** | 3 | 30002 | API Service |
+| **Frontend** | 1 | 30001 | Web Application |
+| **Database** | 1 | 30432 | PostgreSQL Database |
+
+---
+
+### Repository Configuration
+
+#### 1. Repo config cho backend
+**[Repo config backend](https://github.com/Maybetuandat/vdt_2025_backend_config)**
+
+#### `values-prod.yaml` của backend service:
+```yaml
+replicaCount: 3
+image:
+  repository: maybetuandat/vdt_backend
+  pullPolicy: IfNotPresent
+  tag: "1.0"
+  
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30002
+
+database:
+  host: vdt-database-postgres-chart
+  port: 5432
+  name: student_management
+  user: postgres
+  password: "123456"
+
+resources: {}
+```
+
+#### 2. Repo config cho frontend
+**[Repo config frontend](https://github.com/Maybetuandat/vdt_2025_frontend_config)**
+
+#### `values-prod.yaml` của frontend config:
+```yaml
+replicaCount: 1
+image:
+  repository: maybetuandat/vdt_fe
+  pullPolicy: IfNotPresent
+  tag: "1.0"
+
+securityContext: {}
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 80
+  nodePort: 30001
+  portName: vdt-web-port
+
+resources: {}
+
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+```
+#### 3. Values config cho database
+```yaml
+replicaCount: 1
+
+image:
+  repository: maybetuandat/vdt_db
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 5432
+  nodePort: 30432
+
+persistence:
+  enabled: true
+  storageClass: "standard" 
+  size: 1Gi
+
+env:
+  POSTGRES_DB: student_management
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: "123456"
+
+
+healthCheck:
+  enabled: true
+```
+
+### Manifest của ArgoCD Application
+Manifest của ARgoCD Application sử dụng để triển khai các backend service và frontend service  lên K8s Cluster
+Đối với frontend và backend đều sử dụng 2 repo:
+- Repo source code chứa các file helm chart
+- Repo config chứa các file value-prod.yaml để lưu trữ các giá trị biên sử dụng để triển khai lên cụm K8S
+#### 1. Manifest triển khai backend 
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vdt-backend
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/Maybetuandat/vdt_2025_backend_config'
+      targetRevision: HEAD
+      ref: values
+    - repoURL: 'https://github.com/Maybetuandat/vdt_2025_backend'
+      targetRevision: HEAD
+      path: 'backend-chart'
+      helm:
+        valueFiles:
+        - $values/helm-values/values-prod.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: vdt-app
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
+```
+Backend sẽ đươc expose ra NodePort: 30002
+
+Manifest expose ra NodePort: [Service](https://github.com/Maybetuandat/vdt_2025_backend/blob/main/backend-chart/templates/service.yaml)
+
+#### 2. Manifest triển khai frontend
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vdt-frontend
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/Maybetuandat/vdt_2025_frontend_config'
+      targetRevision: HEAD
+      ref: values
+    - repoURL: 'https://github.com/Maybetuandat/vdt_2025_frontend'
+      targetRevision: HEAD
+      path: 'helm-chart'
+      helm:
+        valueFiles:
+        - $values/helm-values/values-prod.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: vdt-app
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
+```
+Frontend sẽ đươc expose ra NodePort: 30001
+
+Manifest expose ra NodePort: [Service](https://github.com/Maybetuandat/vdt_2025_frontend/blob/main/helm-chart/templates/service.yaml)
+
+#### 3. Manifest sử dụng để triển khai database
+``` yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vdt-database
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Maybetuandat/vdt_db'
+    targetRevision: HEAD
+    path: 'database-chart'
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: vdt-app
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
+```
+Database sẽ đươc expose ra NodePort: 30432
+
+Manifest expose ra NodePort: [Service](https://github.com/Maybetuandat/vdt_db/blob/main/database-chart/templates/postgres-service.yaml)
+
+### Ảnh chụp màn hình giao diện ArgoCD và Deployment
+
+#### Giao diện ArgoCD trên trình duyệt
+
+#### Tổng quan các Application
+Hình ảnh danh sách toàn bộ các application trong ArgoCD:
+
+![ArgoCD Applications Overview](images/argocd_app.png)
+
+---
+
+#### Backend Application
+
+#### Chi tiết Backend Application
+![Backend Application](images/argocd_backend.png)
+
+#### Service Backend
+![Backend Service](images/argocd_backend_service.png)
+
+#### Thông tin chi tiết Backend Application
+![Backend Application Details](images/argocd_backend_application.png)
+
+---
+
+#### Frontend Application
+
+#### Chi tiết Frontend Application
+![Frontend Application](images/argocd_frontend.png)
+
+#### ConfigMap của Frontend Application
+![Frontend ConfigMap](images/argocd_frontend_configmap.png)
+
+#### Thông tin chi tiết Frontend Application
+![Frontend Application Details](images/argocd_frontend_detail.png)
+
+---
+
+#### Database Application
+
+#### Chi tiết Database
+![Database Application](images/argocd_database.png)
+
+#### Thông tin chi tiết Database
+![Database Details](images/argocd_database_detail.png)
+
+---
+
+### Ảnh chụp màn hình trình duyệt khi truy cập vào WEB URL, API URL
+
+#### Truy cập Frontend Application
+Hình ảnh khi truy cập vào frontend:
+
+![Frontend Deployment](images/argocd_frontend_deploy.png)
+
+#### Truy cập API Application
+Hình ảnh khi truy cập vào API:
+
+![Backend API Deployment](images/argocd_deploy_backend.png)
