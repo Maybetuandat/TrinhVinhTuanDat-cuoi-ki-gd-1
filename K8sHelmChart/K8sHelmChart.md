@@ -4,7 +4,7 @@
 Triển khai web application sử dụng các DevOps tools & practices. Sinh viên chọn 1 app bất kỳ theo cấu trúc microservices (ví dụ web app và api service).
 
 ### Ứng dụng được lựa chọn
-Giao diện webapp được lựa chọn: Hiển thị danh sách sinh viên tham gia chương trình VDT 2025 lĩnh vực Cloud với công nghệ cốt lõi sử dụng:
+WebApp hiển thị danh sách sinh viên tham gia chương trình VDT 2025 lĩnh vực Cloud 
 
 #### Kiến trúc hệ thống:
 - **Service Backend**: Spring Boot 
