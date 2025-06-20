@@ -153,16 +153,20 @@ ArgoCD phát hiện sự thay đổi trong config repository và hiển thị di
 ![alt text](images/arrgocd_diff.png)
 
 ### Bước 7: ArgoCD Application Events
+ArgoCD bắt đầu thực hiện deploy 
+![alt text](images/arrgocd_deploy.png)
+
+### Bước 8: ArgoCD Application Events
 Hình ảnh event thay đổi của backend application trong ArgoCD
 
 ![alt text](images/argocd_backend.png)
 
-### Bước 8: Deployment Manifest Update
+### Bước 9: Deployment Manifest Update
 Manifest mới của backend deployment đã được cập nhật lên tag **3.6**
 
 ![alt text](images/argocd_backend_deployment_3_6.png)
 
-### Bước 9: Final Application State
+### Bước 10: Final Application State
 Trạng thái cuối cùng của backend application sau khi hoàn thành luồng CI/CD
 
 ![alt text](images/argocd_backend.png)
