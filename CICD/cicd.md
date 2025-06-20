@@ -41,7 +41,53 @@ Do Jenkins được triển khai trên cụm Kubernetes và chỉ có thể truy
 ```bash
 nohup ngrok http --url=freely-guiding-fowl.ngrok-free.app 192.168.122.93:30999 &
 ```
+## Cấu hình Jenkins Agent
 
+Thực hiện tạo một Jenkins agent và cài đặt các công cụ cần thiết như Git, Docker, đồng thời tạo user Jenkins để agent có thể thực hiện pipeline.
+Jenkins Agent sẽ được sử dụng để chạy các pipeline của jenkins
+
+---
+
+### Tạo máy ảo mới
+
+Thực hiện tạo thêm một máy ảo để làm Jenkins agent
+
+![alt text](images/mayao.png)
+
+Cấu hình địa chỉ IP tĩnh cho máy ảo
+
+![alt text](images/ip.png)
+
+---
+
+### Tạo Jenkins Agent
+
+- Tạo một node agent mới trong Jenkins
+- Cấu hình kết nối và các thông số cần thiết
+
+---
+
+### Cài đặt các công cụ cần thiết
+
+- **Git:** Để clone source code từ repository
+- **Docker:** Để build và push Docker images  
+- **Java:** Runtime environment cho Jenkins agent
+
+---
+
+### Tạo user Jenkins
+
+- Tạo user `jenkins` trên máy agent
+- Cấp quyền thực thi pipeline và truy cập Docker daemon
+- Cấu hình SSH key để kết nối với Jenkins master
+
+---
+
+### Kiểm tra kết nối
+
+Xác minh Jenkins agent đã được cấu hình thành công và có thể nhận job từ master
+
+![alt text](images/jenkins_agent.png)
 
 
 
@@ -152,14 +198,14 @@ ArgoCD phát hiện sự thay đổi trong config repository và hiển thị di
 
 ![alt text](images/arrgocd_diff.png)
 
-### Bước 7: ArgoCD Application Events
+### Bước 7: ArgoCD Application
 ArgoCD bắt đầu thực hiện deploy 
 ![alt text](images/arrgocd_deploy.png)
 
 ### Bước 8: ArgoCD Application Events
 Hình ảnh event thay đổi của backend application trong ArgoCD
 
-![alt text](images/argocd_backend.png)
+![alt text](images/argocd_backend_event.png)
 
 ### Bước 9: Deployment Manifest Update
 Manifest mới của backend deployment đã được cập nhật lên tag **3.6**
