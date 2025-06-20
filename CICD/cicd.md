@@ -106,3 +106,63 @@ Pipeline sẽ được trigger tự động khi có tag mới được tạo tr�
 ### Chỉ định đường dẫn Jenkinsfile
 Xác định vị trí file Jenkinsfile trong repository 
 ![alt text](images/jenkinsfile.png)
+
+Cấu hinh token yêu cầu gửi từ webhook
+![alt text](images/token.png)
+
+## 1.3 Thực hiện chạy luồng CI/CD
+
+### Bước 1: Tạo và Push Tag mới
+Thực hiện tạo tag **3.6** và push lên repository backend
+
+![alt text](images/push_tag.png)
+
+### Bước 2: GitHub Webhook Trigger
+Webhook tự động gửi request về Jenkins server khi phát hiện tag mới
+
+![alt text](images/webhook-3-6.png)
+
+### Bước 3: Jenkins Pipeline Execution
+Jenkins pipeline được kích hoạt và khởi chạy tự động
+
+![alt text](images/jenkinse_pipeline.png)
+
+**Chi tiết log Jenkins Pipeline:**
+
+![alt text](images/log_1_jenkins.png)
+
+![alt text](images/log2_jenkins.png)
+
+**Log chi tiết CI Jenkins:** [Jenkins Log file](logs/backend_logs.txt)
+
+### Bước 4: Build và Push Docker Image
+Thực hiện build Docker image với tag **3.6** và push lên Docker Hub
+
+![alt text](images/dockerhub.png)
+
+### Bước 5: Cập nhật Config Repository
+- Clone repository config
+- Thay đổi image tag từ phiên bản cũ sang **3.6** trong file values
+- Push thay đổi lên config repository
+
+![alt text](images/backend_repoconfig.png)
+
+### Bước 6: ArgoCD Detect Changes
+ArgoCD phát hiện sự thay đổi trong config repository và hiển thị diff
+
+![alt text](images/arrgocd_diff.png)
+
+### Bước 7: ArgoCD Application Events
+Hình ảnh event thay đổi của backend application trong ArgoCD
+
+![alt text](images/argocd_backend.png)
+
+### Bước 8: Deployment Manifest Update
+Manifest mới của backend deployment đã được cập nhật lên tag **3.6**
+
+![alt text](images/argocd_backend_deployment_3_6.png)
+
+### Bước 9: Final Application State
+Trạng thái cuối cùng của backend application sau khi hoàn thành luồng CI/CD
+
+![alt text](images/argocd_backend.png)
