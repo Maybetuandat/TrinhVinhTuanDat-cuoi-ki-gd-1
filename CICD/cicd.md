@@ -44,7 +44,6 @@ nohup ngrok http --url=freely-guiding-fowl.ngrok-free.app 192.168.122.93:30999 &
 ## Cấu hình Jenkins Agent
 
 Thực hiện tạo một Jenkins agent và cài đặt các công cụ cần thiết như Git, Docker, đồng thời tạo user Jenkins để agent có thể thực hiện pipeline.
-Jenkins Agent sẽ được sử dụng để chạy các pipeline của jenkins
 
 ---
 
