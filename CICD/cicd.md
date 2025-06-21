@@ -215,3 +215,141 @@ Manifest mới của backend deployment đã được cập nhật lên tag **3.
 Trạng thái cuối cùng của backend application sau khi hoàn thành luồng CI/CD
 
 ![alt text](images/argocd_backend.png)
+
+# 2. Cấu hình CI/CD cho Frontend
+
+
+
+## Trạng thái ban đầu
+
+### Giao diện ứng dụng
+Giao diện ban đầu đang được chạy trên cụm Kubernetes với đầy đủ chức năng:
+
+![Giao diện ban đầu](images/fe1.png)
+
+
+### Trạng thái Kubernetes Cluster
+**Pods đang chạy trong namespace `vdt-app`:**
+![Kubernetes Pods](images/1.png)
+*Danh sách các pods đang hoạt động trong namespace vdt-app*
+
+**Services được expose qua NodePort:**
+![Kubernetes Services](images/2.png)
+
+
+---
+
+## Thực hiện thay đổi code
+
+### Mục tiêu
+Xóa button "Thêm sinh viên" 
+
+**Sửa trong code**
+
+![Sửa trong code](images/fe2.png)
+
+**Sau khi chỉnh sửa:**
+
+![Giao diện sau khi sửa](images/fe3.png)
+
+
+
+
+## Version Control
+
+### Tạo tag và push code
+Thực hiện tạo tag version `2.0` và push lên GitHub repository:
+
+![Git tag và push](images/fe4.png)
+*Tạo tag v2.0 và push lên remote repository*
+
+
+
+## CI/CD Pipeline Execution
+
+### 1. Webhook Trigger
+GitHub webhook tự động gửi thông báo đến Jenkins server khi có thay đổi:
+
+![Webhook notification](images/fe5.png)
+*Webhook gửi POST request đến Jenkins server*
+
+### 2. Jenkins Pipeline Execution
+Jenkins server nhận trigger và bắt đầu thực thi pipeline:
+
+![Jenkins pipeline start](images/fe6.png)
+*Jenkins pipeline được kích hoạt tự động*
+
+### 3. Build Process Logs
+Chi tiết quá trình build được ghi lại trong Jenkins logs:
+
+![Jenkins build log 1](images/fe7.png)
+![Jenkins build log 2](images/fe8.png)
+*Logs chi tiết của quá trình build và test*
+
+ **[Xem full log tại đây](logs/frontend_log.txt)**
+
+### 4. Docker Image Build & Push
+Jenkins agent thực hiện build Docker image và push lên Docker Hub:
+
+![Docker Hub push](images/fe9.png)
+*Image được build thành công và push lên Docker Hub registry*
+
+### 5. Config Repository Update
+Jenkins tự động cập nhật version trong file `values-prod.yaml`:
+
+![Config repo update](images/fe10.png)
+*Cập nhật tag trong repo config*
+
+### 6. CI Pipeline Completion
+Quá trình CI hoàn thành thành công:
+
+![CI completion](images/fe11.png)
+*Jenkins pipeline hoàn thành tất cả các bước CI*
+
+---
+
+## Deployment với ArgoCD
+
+### 1. ArgoCD Sync Process
+Với cơ chế tự động polling sau cứ mỗi 3 phút,
+ArgoCD thực hiện sync:
+
+![ArgoCD sync](images/fe12.png)
+
+
+### 2. Deployment Events
+Chi tiết các event trong quá trình deployment:
+
+![Deployment events](images/fe14.png)
+*Timeline các event trong quá trình deploy frontend*
+
+### 3. Deployment Completion
+ArgoCD hoàn thành quá trình deployment:
+
+![ArgoCD completion](images/fe13.png)
+*Trạng thái "Synced" và "Healthy" cho thấy deployment thành công*
+
+---
+
+## Kết quả cuối cùng
+
+### Giao diện sau deployment
+Giao diện ứng dụng sau khi deploy thành công, đúng như mong đợi:
+
+![Final result](images/fe15.png)
+*Giao diện cuối cùng đã được cập nhật, không còn button "Thêm sinh viên"*
+
+
+
+
+# Kết luận
+
+Hệ thống CI/CD đã được triển khai thành công cho cả Backend (v3.6) và Frontend (v2.0) với kiến trúc GitOps hoàn chỉnh. Quy trình tự động hóa từ việc tạo Git tag đến deployment production hoạt động ổn định qua các công cụ Jenkins, ArgoCD và Kubernetes.
+
+Kết quả:
+- **Tự động hóa hoàn toàn**: Zero-touch deployment từ code commit đến production
+- **GitOps workflow**: Mọi thay đổi được version control và có thể rollback
+- **Kiến trúc đáng tin cậy**: Separation giữa source code và config repositories
+- **Quy trình chuẩn hóa**: Consistent build process cho tất cả services
+
+

@@ -140,4 +140,14 @@ kubectl get pods -A -o wide
 
 ---
 
+# Kết luận
+
+Kubernetes cluster đã được triển khai thành công sử dụng công cụ Kubespray với kiến trúc multi-node bao gồm 1 master node và 1 worker node. Cả hai máy ảo được cấu hình với thông số phù hợp (2 CPU cores, 4GB RAM, 50GB storage) và địa chỉ IP tĩnh.
+
+Kết quả:
+- **Kubespray deployment** hoàn thành thành công với Ansible automation
+- **Network configuration** với IP tĩnh và SSH port tùy chỉnh (2222)  
+- **SSH key authentication** được thiết lập để tự động hóa quá trình triển khai
+- **Cluster status** hiển thị tất cả nodes ở trạng thái Ready
+
 

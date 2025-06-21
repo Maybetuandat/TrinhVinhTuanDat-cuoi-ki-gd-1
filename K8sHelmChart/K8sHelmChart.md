@@ -444,3 +444,19 @@ Hình ảnh khi truy cập vào frontend:
 Hình ảnh khi truy cập vào API:
 
 ![Backend API Deployment](images/argocd_deploy_backend.png)
+
+# Kết luận
+
+Hệ thống đã triển khai thành công web application với kiến trúc microservices sử dụng Kubernetes, ArgoCD và Helm Charts. Ứng dụng quản lý sinh viên VDT 2025 bao gồm Frontend (React), Backend (Spring Boot) và Database (PostgreSQL) đã được containerized và deploy lên K8s cluster.
+
+Kết quả:
+- **ArgoCD và Jenkins** được cài đặt và expose thành công qua NodePort
+- **Helm Charts** được thiết kế cho từng service với cấu trúc module hóa
+- **GitOps workflow** với repo source code và config repository tách biệt
+- **Multi-source ArgoCD Applications** quản lý deployment tự động
+
+Các NodePort đươc expose:
+- **Frontend** : 30001
+- **Backend** : 30002
+- **Database** : 30432
+![alt text](images/image.png)
