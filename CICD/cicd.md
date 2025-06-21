@@ -242,7 +242,7 @@ Giao diện ban đầu đang được chạy trên cụm Kubernetes với đầy
 ## Thực hiện thay đổi code
 
 ### Mục tiêu
-Xóa button "Thêm sinh viên" 
+Xóa button "Thêm sinh viên"  bằng cách comment phần code giao diện button thêm sinh viên
 
 **Sửa trong code**
 
