@@ -162,6 +162,9 @@ Thực hiện tạo tag **3.6** và push lên repository backend
 
 ![alt text](images/push_tag.png)
 
+Tag được push trên repo github 
+![alt text](images/tag_backend_1.png)
+
 ### Bước 2: GitHub Webhook Trigger
 Webhook tự động gửi request về Jenkins server khi phát hiện tag mới
 
@@ -263,7 +266,7 @@ Thực hiện tạo tag version `2.0` và push lên GitHub repository:
 ![Git tag và push](images/fe4.png)
 *Tạo tag v2.0 và push lên remote repository*
 
-
+Tag được push lên repo ![alt text](images/tag_fe_1.png)
 
 ## CI/CD Pipeline Execution
 
