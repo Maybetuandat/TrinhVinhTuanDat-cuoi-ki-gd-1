@@ -152,7 +152,7 @@ Pipeline sẽ được trigger tự động khi có tag mới được tạo tr�
 Xác định vị trí file Jenkinsfile trong repository 
 ![alt text](images/jenkinsfile.png)
 
-Cấu hinh token yêu cầu gửi từ webhook
+### Cấu hinh token yêu cầu gửi từ webhook
 ![alt text](images/token.png)
 
 ## 1.3 Thực hiện chạy luồng CI/CD
